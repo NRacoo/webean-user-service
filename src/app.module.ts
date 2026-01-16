@@ -8,9 +8,10 @@ import { UserService } from './user/user.service';
 import { MailService } from './mail/mail.service';
 import { ProfileService } from './profile/profile.service';
 import { ProfileModule } from './profile/profile.module';
+import { ImagekitModule } from './database/imagekit/image.module';
 
 @Module({
-  imports: [UserModule, DatabaseModule, MailModule, ProfileModule],
+  imports: [UserModule, DatabaseModule, MailModule, ProfileModule, ImagekitModule],
   controllers: [AppController],
   providers: [AppService, UserService, MailService, ProfileService],
 })

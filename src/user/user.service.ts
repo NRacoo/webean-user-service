@@ -6,6 +6,7 @@ import * as crypto from 'crypto'
 import { MailService } from '../mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
+import { UpdateUserDTO } from 'src/dto/update.dto';
 
 @Injectable()
 export class UserService {
@@ -56,11 +57,14 @@ export class UserService {
                 email:dto.email,
                 address:dto.address,
                 birth: new Date(dto.birth),
+                imageProfile: '',
 
                 isVerified: false,
                 verifyToken,
                 verifyExpiredAt: expiredAt,
+                
             },
+            
         },
        );
 
@@ -145,5 +149,34 @@ export class UserService {
             }
         )
     }
+
+    async UpdateById(userId: string, data:UpdateUserDTO){
+        return await this.prisma.user.update(
+            {
+                where:
+                {
+                    id: userId
+                },
+                data,
+            }
+        )
+    }
+
+    async UpdateImageById(userId : string, imageUrl:string){
+
+        return await this.prisma.user.update(
+            { 
+                where:
+                {
+                    id:userId
+                },
+                data:{
+                    imageProfile:imageUrl
+                }
+            }
+        )
+        
+    }
+       
 
 }

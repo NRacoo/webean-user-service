@@ -19,7 +19,7 @@ export class UserController {
         }   
     }
 
-    @HttpCode(HttpStatus.ACCEPTED)
+    @HttpCode(HttpStatus.OK)
     @Post('login')
     async Login(@Body() data:UserDTO){
         try {
@@ -30,7 +30,7 @@ export class UserController {
         };
     }
 
-    @HttpCode(HttpStatus.ACCEPTED)
+    @HttpCode(HttpStatus.OK)
     @Get('verify-email')
     async VerifyEmail(@Query('token') token:string){
         await this.service.GetVerify(token)

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt'
 import * as crypto from 'crypto'
 import { MailService } from '../mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -14,16 +15,16 @@ export class UserService {
         private readonly JwtService : JwtService
     ){}
 
-    async CreateUser(data:UserDTO){
-        if(!data.email){
+    async CreateUser(dto:UserDTO){
+        if(!dto.email){
             throw new BadRequestException("use verified email!")
         }
-        if(!data.username || !data.password){
+        if(!dto.username || !dto.password){
             throw new BadRequestException("username or password are required")
         };
 
        const existingUsername = await this.prisma.user.findUnique(
-        {where: {username : data.username}}
+        {where: {username : dto.username}}
        );
 
        if(existingUsername){
@@ -32,14 +33,14 @@ export class UserService {
 
        const existingEmail = await this.prisma.user.findUnique(
         {
-            where: {email: data.email}
+            where: {email: dto.email}
         }
        );
        if(existingEmail){
         throw new BadRequestException("email already used")
        };
 
-       const hash = await bcrypt.hash(data.password, 10);
+       const hash = await bcrypt.hash(dto.password, 10);
 
        const verifyToken = crypto.randomBytes(32).toString('hex');
        const expiredAt = new Date(Date.now() + 1000 * 60 * 60)
@@ -49,12 +50,12 @@ export class UserService {
        await this.prisma.user.create(
         {
             data:{
-                username:data.username,
+                username:dto.username,
                 password:hash,
-                phone:data.phone,
-                email:data.email,
-                address:data.address,
-                birth: new Date(data.birth),
+                phone:dto.phone,
+                email:dto.email,
+                address:dto.address,
+                birth: new Date(dto.birth),
 
                 isVerified: false,
                 verifyToken,
@@ -63,7 +64,7 @@ export class UserService {
         },
        );
 
-       await this.mailService.sendVerifyEmail(data.email, data.username, verifyLink);
+       await this.mailService.sendVerifyEmail(dto.email, dto.username, verifyLink);
        return {message: "succesfully created"}
 
     }
@@ -125,14 +126,22 @@ export class UserService {
         return {message: 'login success', result: payload, access_token}
     }
 
-    async FindUser(data : UserDTO){
-        const {username} = data;
+    async FindUser(username:string){
 
         return await this.prisma.user.findUnique(
             {
                 where: {
                     username: username
                 }
+            }
+        )
+    }
+
+    async UpdateByUsername(username:string, data:Partial<User>){
+        return await this.prisma.user.update(
+            {
+                where: {username},
+                data
             }
         )
     }

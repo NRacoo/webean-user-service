@@ -30,3 +30,14 @@ export class UserDTO {
   @IsDateString()
   birth: string;
 }
+
+
+export class ChangePasswordDTO {
+    @IsString()
+    @IsNotEmpty()
+    oldPassword:string
+
+    @IsString()
+    @IsNotEmpty()
+    newPassword:string
+}

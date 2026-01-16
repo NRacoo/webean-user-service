@@ -20,6 +20,17 @@ export class UserController {
     }
 
     @HttpCode(HttpStatus.ACCEPTED)
+    @Post('login')
+    async Login(@Body() data:UserDTO){
+        try {
+            return this.service.Login(data)
+            
+        } catch (error) {
+            return {status: 500, message: error}
+        };
+    }
+
+    @HttpCode(HttpStatus.ACCEPTED)
     @Get('verify-email')
     async VerifyEmail(@Query('token') token:string){
         await this.service.GetVerify(token)

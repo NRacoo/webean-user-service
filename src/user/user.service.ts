@@ -10,8 +10,8 @@ import { JwtService } from '@nestjs/jwt';
 export class UserService {
     constructor(
         private readonly prisma : DatabaseService,
-        private mailService: MailService,
-        private JwtService : JwtService
+        private readonly mailService: MailService,
+        private readonly JwtService : JwtService
     ){}
 
     async CreateUser(data:UserDTO){
@@ -123,6 +123,18 @@ export class UserService {
         const access_token = await this.JwtService.signAsync(payload)
 
         return {message: 'login success', result: payload, access_token}
+    }
+
+    async FindUser(data : UserDTO){
+        const {username} = data;
+
+        return await this.prisma.user.findUnique(
+            {
+                where: {
+                    username: username
+                }
+            }
+        )
     }
 
 }

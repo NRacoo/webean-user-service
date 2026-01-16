@@ -11,10 +11,12 @@ import { MailModule } from '../mail/mail.module';
   providers: [UserService],
   imports:[DatabaseModule,
     JwtModule.register({
+      global:true,
       secret: JWTConstants.secret,
       signOptions: {expiresIn: '1h'}
     }),
     MailModule
-  ]
+  ],
+  exports:[UserService]
 })
 export class UserModule {}

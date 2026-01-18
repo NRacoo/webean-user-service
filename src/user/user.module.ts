@@ -5,10 +5,12 @@ import { DatabaseModule } from '../database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JWTConstants } from '../../constants';
 import { MailModule } from '../mail/mail.module';
+import { UserGuard } from './guard/user.guard';
+import { AdminGuard } from './guard/admin.guard';
 
 @Module({
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, UserGuard, AdminGuard],
   imports:[DatabaseModule,
     JwtModule.register({
       global:true,

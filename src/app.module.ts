@@ -9,6 +9,7 @@ import { MailService } from './mail/mail.service';
 import { ProfileService } from './profile/profile.service';
 import { ProfileModule } from './profile/profile.module';
 import { ImagekitModule } from './database/imagekit/image.module';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [UserModule, DatabaseModule, MailModule, ProfileModule, ImagekitModule],

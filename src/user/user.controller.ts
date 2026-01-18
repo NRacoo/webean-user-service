@@ -1,6 +1,9 @@
-import { BadGatewayException, BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDTO } from '../dto/user.dto';
+import { AdminGuard } from './guard/admin.guard';
+import * as express from 'express'
+import { successPage } from '../mail/success.html';
 
 
 @Controller('user')
@@ -19,6 +22,18 @@ export class UserController {
         }   
     }
 
+    @UseGuards(AdminGuard)
+    @HttpCode(HttpStatus.CREATED)
+    @Post('new-user')
+    async NewUser(@Body() dto:UserDTO){
+        try {
+            return this.service.CreateUserByUser(dto)
+            
+        } catch (error) {
+            return {status: 500, message: error}
+        }
+    }
+
     @HttpCode(HttpStatus.OK)
     @Post('login')
     async Login(@Body() data:UserDTO){
@@ -32,9 +47,10 @@ export class UserController {
 
     @HttpCode(HttpStatus.OK)
     @Get('verify-email')
-    async VerifyEmail(@Query('token') token:string){
+    async VerifyEmail(@Query('token') token:string, @Res() res: express.Response){
         await this.service.GetVerify(token)
-        return {message: 'Email verified successfully'}
+
+        return res.send(successPage())
 
     }
 }

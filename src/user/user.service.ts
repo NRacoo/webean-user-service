@@ -103,7 +103,9 @@ export class UserService {
                     verifyExpiredAt:null
                 }
             }
-        )
+        );
+
+        await this.mailService.sendSuccessVerifyEmail(user.email, user.username);
     }
 
     async Login(data: UserDTO) : Promise <{access_token: string, message: string, result: any}>{
@@ -123,7 +125,7 @@ export class UserService {
             throw new BadRequestException('password not match')
         };
 
-        const payload = {id : user.id, username: user.username, role: user.role};
+        const payload = {sub : user.id, username: user.username, role: user.role};
 
         const access_token = await this.JwtService.signAsync(payload)
 
@@ -176,6 +178,50 @@ export class UserService {
             }
         )
         
+    }
+
+    async CreateUserByUser(dto:UserDTO){
+        const {username, email} = dto
+        
+        const existedUser = await this.prisma.user.findFirst(
+            {
+                where:{
+                    OR:[{email: email}, {username:username}]
+                }
+            }
+        )
+
+        if(existedUser){
+            throw new BadRequestException("email or username already used")
+        }
+
+        const hashedPassword = await bcrypt.hash(dto.password, 10)
+
+       const verifyToken = crypto.randomBytes(32).toString('hex');
+       const expiredAt = new Date(Date.now() + 1000 * 60 * 60)
+        const verifyLink = `http://localhost:3000/user/verify-email?token=${verifyToken}`
+
+        await this.prisma.user.create(
+            {
+                data:{
+                    username:username, 
+                    password:hashedPassword,
+                    email:email,
+                    phone:dto.phone,
+                    address:dto.address,
+                    birth: new Date(dto.birth),
+                    imageProfile: '',
+
+                    isVerified: false,
+                    verifyToken,
+                    verifyExpiredAt:expiredAt
+                }
+            }
+        )
+
+        await this.mailService.sendVerifyEmail(email, username, verifyLink)
+
+        return {message: "new user successfully add"}
     }
        
 

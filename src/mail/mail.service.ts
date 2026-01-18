@@ -74,4 +74,46 @@ export class MailService {
       `,
     });
   }
+
+  async sendSuccessVerifyEmail(
+    email: string,
+    username: string,
+  ) {
+    return this.mailer.sendMail({
+      to: email,
+      subject: 'Welcome! Email Successfully Verified',
+      html: `
+      <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 40px;">
+        <div style="max-width: 500px; margin: auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+          
+          <div style="background: #5E936C; padding: 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Email Verified!</h1>
+          </div>
+
+          <div style="padding: 30px; color: #333; text-align: center;">
+
+            <p style="font-size: 16px; margin-bottom: 20px;">
+              Hi <b>${username}</b>,
+            </p>
+
+            <p style="font-size: 14px; line-height: 1.6; color: #555;">
+              Congratulations! Your email address has been successfully verified. 
+              Your account is now fully active, and you are ready to get started.
+            </p>
+
+            <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;" />
+
+            <p style="font-size: 12px; color: #999;">
+              Thank you for joining us!
+            </p>
+          </div>
+        </div>
+
+        <p style="text-align: center; font-size: 12px; color: #aaa; margin-top: 20px;">
+          © ${new Date().getFullYear()} Webean. All rights reserved.
+        </p>
+      </div>
+      `,
+    });
+  }
 }

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { UserGuard } from '../user/user.guard';
+import { UserGuard } from '../user/guard/user.guard';
 import { ChangePasswordDTO } from '../dto/user.dto';
 import { UpdateUserDTO } from '../dto/update.dto';
 

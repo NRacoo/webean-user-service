@@ -15,7 +15,7 @@ export class AdminGuard implements CanActivate{
 
         try {
             const payload = await this.JwtService.verifyAsync(token, {secret: JWTConstants.secret})
-            request['ADMIN'] = payload;
+            request['user'] = payload;
         } catch (error) {
             throw new UnauthorizedException();          
         };

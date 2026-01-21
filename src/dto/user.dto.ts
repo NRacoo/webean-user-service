@@ -28,7 +28,7 @@ export class UserDTO {
   address: string;
 
   @IsDateString()
-  birth: string;
+  birth: string | Date;
 }
 
 
@@ -40,4 +40,10 @@ export class ChangePasswordDTO {
     @IsString()
     @IsNotEmpty()
     newPassword:string
+}
+
+export class ImageDTO{
+  @IsString()
+  @IsNotEmpty()
+  imageUrl: string 
 }

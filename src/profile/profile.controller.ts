@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UserGuard } from '../user/guard/user.guard';
-import { ChangePasswordDTO } from '../dto/user.dto';
+import { ChangePasswordDTO, ImageDTO } from '../dto/user.dto';
 import { UpdateUserDTO } from '../dto/update.dto';
 
 @Controller('profile')
@@ -24,9 +24,9 @@ export class ProfileController {
 
     @UseGuards(UserGuard)
     @HttpCode(HttpStatus.OK)
-    @Post('image')
-    async UpdateProfileImage(@Req() req,@Body() imageUrl:string){
-        return await this.service.updateProfileImage(req.user.id, imageUrl)
+    @Patch('image')
+    async UpdateProfileImage(@Req() req,@Body() dto:ImageDTO){
+        return await this.service.updateProfileImage(req.user.id, dto.imageUrl)
     }
 
     @UseGuards(UserGuard)

@@ -125,7 +125,7 @@ export class UserService {
             throw new BadRequestException('password not match')
         };
 
-        const payload = {sub : user.id, username: user.username, role: user.role};
+        const payload = {id: user.id, username: user.username, role: user.role};
 
         const access_token = await this.JwtService.signAsync(payload)
 
@@ -153,6 +153,8 @@ export class UserService {
     }
 
     async UpdateById(userId: string, data:UpdateUserDTO){
+        if(data.birth) data.birth = new Date(data.birth);
+
         return await this.prisma.user.update(
             {
                 where:

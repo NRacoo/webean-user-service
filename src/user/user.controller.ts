@@ -49,8 +49,6 @@ export class UserController {
     @Get('verify-email')
     async VerifyEmail(@Query('token') token:string, @Res() res: express.Response){
         await this.service.GetVerify(token)
-
         return res.send(successPage())
-
     }
 }

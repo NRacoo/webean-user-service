@@ -46,7 +46,7 @@ export class UserService {
        const verifyToken = crypto.randomBytes(32).toString('hex');
        const expiredAt = new Date(Date.now() + 1000 * 60 * 60)
 
-       const verifyLink = `http://localhost:3000/user/verify-email?token=${verifyToken}`
+       const verifyLink = `https://webean-user-service.vercel.app/user/verify-email?token=${verifyToken}`
        
        await this.prisma.user.create(
         {

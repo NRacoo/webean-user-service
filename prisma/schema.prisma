@@ -46,3 +46,53 @@ model UserDevice {
 
   @@unique([userId, deviceCode])
 }
+
+model Detection_sessions{
+  id String @id @default(cuid())
+  startedAt DateTime @default(now())
+  endedAt DateTime?
+  totalBaik Int @default(0)
+  totalCacat Int @default(0)
+  
+  records Detection_records[]
+
+  monthSummaryId String?
+  monthSummary Detection_monthly? @relation(fields: [monthSummaryId], references: [id], onDelete: SetNull)
+
+  @@index([startedAt])
+  @@index([monthSummaryId])
+}
+
+model Detection_records{
+  id String @id @default(cuid())
+  timestamp DateTime @default(now())
+
+  baik Int
+  cacat Int
+
+  sessionId String
+  session Detection_sessions @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  @@index([sessionId])
+  @@index([timestamp])
+}
+
+model Detection_monthly {
+  id String @id @default(cuid())
+  year Int 
+  month Int 
+  updatedAt DateTime @updatedAt
+
+  totalBaik Int @default(0)
+  totalCacat Int @default(0)
+  totalPanen Int @default(0)
+
+  avgBaikPerSesi Float @default(0)
+  avgCacatPerSesi Float @default(0)
+  persenBaik Float @default(0)
+
+  jumlahSesi Int @default(0)
+
+  sessions Detection_sessions[]
+  @@unique([year, month])
+  @@index([year])
+}

@@ -46,7 +46,7 @@ export class UserService {
        const verifyToken = crypto.randomBytes(32).toString('hex');
        const expiredAt = new Date(Date.now() + 1000 * 60 * 60)
 
-       const verifyLink = `https://webean-user-service.vercel.app/user/verify-email?token=${verifyToken}`
+       const verifyLink = `${process.env.BASE_URL}user/verify-email?token=${verifyToken}`
        
        await this.prisma.user.create(
         {
@@ -73,39 +73,42 @@ export class UserService {
 
     }
 
-    async GetVerify(token:string){
+    async GetVerify(userId:string){
         const user = await this.prisma.user.findFirst(
             {
                 where: 
                 {
-                    verifyToken: token,
-                    verifyExpiredAt:
-                    {
-                        gt: new Date()
-                    }
+                    id: userId,
                 }
             }
         );
         if (!user){
             throw new BadRequestException('invalid or expired token');
         }
+        if(user.isVerified) throw new BadRequestException('already verified');
 
-        await this.prisma.user.update(
-            {
-                where:
+        const verifyToken = crypto.randomBytes(32).toString('hex');
+        const expiredAt = new Date(Date.now() + 1000 * 60 * 60);
+        const verifyLink = `${process.env.BASE_URL}user/verify-email?token=${verifyToken}`
+
+        await Promise.all([
+            this.prisma.user.update(
                 {
-                    id: user.id
-                },
-                data:
-                {
-                    isVerified: true,
-                    verifyToken:null,
-                    verifyExpiredAt:null
+                    where:
+                    {
+                        id: user.id
+                    },
+                    data:
+                    {
+                        isVerified: true,
+                        verifyToken,
+                        verifyExpiredAt:expiredAt
+                    }
                 }
-            }
-        );
-
-        await this.mailService.sendSuccessVerifyEmail(user.email, user.username);
+            ),
+            this.mailService.sendVerifyEmail(user.email, user.username, verifyLink)
+        ]);
+        return {message: 'verification email resent'}
     }
 
     async Login(data: UserDTO) : Promise <{access_token: string, message: string, result: any}>{
